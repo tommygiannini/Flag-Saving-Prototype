@@ -1,0 +1,3 @@
+This flag saving prototype is designed to be used in bigger projects that need some way of saving flags or other data. It staves different datapoints in different lines, so it can be used to store and retrieve values such as numbers and bools.
+There are currently 2 functions: changeInFile, which changes a certain line in a file (parameters: string filePath, int lineToChange, string newLine), and readLineFromFile, which does what it says (parameters: string filePath, int lineToGet).
+Keep in mind you need to double all the backslaches (\\) in the file path because the compiler treats those different than normal characters.
