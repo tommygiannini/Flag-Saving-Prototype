@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cstdio> // For remove() and rename()
 #include <filesystem>
 #include "Functions.h"
 
@@ -70,3 +69,22 @@ void changeInFile(std::string fileLocation, int lineToChange, std::string newDat
 #endif
 }
 
+std::string readLineFromFile(std::string fileLocation, int lineToRead) {
+    std::ifstream inFile(fileLocation);
+    if (!inFile) {
+        std::cerr << "Error opening file: " << fileLocation << std::endl;
+        return "";
+    }
+    std::string line;
+    int currentLine = 1;
+    while (std::getline(inFile, line)) {
+        if (currentLine == lineToRead) {
+            inFile.close();
+            return line;
+        }
+        currentLine++;
+    }
+    inFile.close();
+    std::cerr << "Line " << lineToRead << " does not exist in file: " << fileLocation << std::endl;
+    return "";
+}
