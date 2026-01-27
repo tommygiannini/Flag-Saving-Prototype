@@ -1,1 +1,4 @@
-#pragma once
+#ifndef FUNCTIONS
+#define FUNCTIONS
+
+#endif FUNCTIONS
