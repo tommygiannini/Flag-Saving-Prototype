@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <vector>
 #include "Functions.h"
 
 #define successMessage //comment this out to stop the success message at the end of the fuctions
@@ -31,21 +32,25 @@ void changeInFile(std::string fileLocation, int lineToChange, std::string newDat
         return;
     }
 
+    std::vector<std::string> lines;
     std::string line;
-    int currentLine = 1;
-
-    // Read every line from the original file and write to temp
     while (std::getline(inFile, line)) {
-        if (currentLine == lineToChange) {
-            outFile << newData << '\n';
-        }
-        else {
-            outFile << line << '\n';
-        }
-        currentLine++;
+        lines.push_back(line);
+    }
+    inFile.close();
+
+    // Ensure the vector has enough lines (pad with empty strings if necessary)
+    while (lines.size() < lineToChange) {
+        lines.push_back("");
     }
 
-    inFile.close();
+    // Replace the specified line (1-based index)
+    lines[lineToChange - 1] = newData;
+
+    // Write all lines to the temp file
+    for (const auto& l : lines) {
+        outFile << l << '\n';
+    }
     outFile.close();
 
     std::error_code ec;
@@ -87,4 +92,41 @@ std::string readLineFromFile(std::string fileLocation, int lineToRead) {
     inFile.close();
     std::cerr << "Line " << lineToRead << " does not exist in file: " << fileLocation << std::endl;
     return "";
+}
+
+void makeNewFile(std::string fileLocation) {
+    namespace fs = std::filesystem;
+    fs::path outputPath(fileLocation);
+    
+    if (fs::exists(outputPath)) {
+        std::cerr << "File already exists: " << fileLocation << std::endl;
+        return;
+    }
+
+    std::ofstream outFile(fileLocation, std::ios::trunc);
+    if (!outFile) {
+        std::cerr << "Error creating file: " << fileLocation << std::endl;
+        return;
+    }
+    outFile.close();
+}
+
+void makeNewFileInDirectory(std::string fileLocation) { //this version makes the directories if they don't exist. keep in mind that this may require elevated permissions depending on the path
+    namespace fs = std::filesystem;
+    fs::path outputPath(fileLocation);
+    
+    if (fs::exists(outputPath)) {
+        std::cerr << "File already exists: " << fileLocation << std::endl;
+        return;
+    }
+
+    fs::create_directories(outputPath.parent_path());
+    std::ofstream outFile(fileLocation, std::ios::trunc);
+
+    if (!outFile) {
+        std::cerr << "Error creating file: " << fileLocation << std::endl;
+        return;
+    }
+
+    outFile.close();
 }
